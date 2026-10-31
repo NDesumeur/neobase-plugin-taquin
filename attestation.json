@@ -1,9 +1,0 @@
-{
-  "pluginId": "neobase.taquin",
-  "repo": "NDesumeur/neobase-plugin-taquin",
-  "version": "1.0.0",
-  "sha256": "5504b1b30ddacbbe010bf15f3020e9c55c12690059fb1ae51ba96ea0405d5754",
-  "approvedAt": "2026-10-31T16:22:01.606Z",
-  "neobase": ">=4.0.0",
-  "signature": "h/ZF7UCYvQSNvlHoAemRut8ZTBTWARsmnzRnR214T1OtbeBnlZ4MQhVSIeNNVkBc3QK5jymcaS/Lkd/IDD9WAw=="
-}

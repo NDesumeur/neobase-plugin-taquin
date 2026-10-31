@@ -2,11 +2,20 @@
 // Ses données sont dans le dossier du plugin, que NeoBase sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoBase.
 // Elle demande l'accès complet pour utiliser les outils d'interface de NeoBase. NeoBase ne l'ouvre que si elle est signée.
 const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Taquin</span><span class=\"hint\" id=\"tqInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"tqSize\"><option value=\"3\">3 × 3</option><option value=\"4\" selected>4 × 4</option><option value=\"5\">5 × 5</option><option value=\"6\">6 × 6</option><option value=\"7\">7 × 7</option><option value=\"8\">8 × 8</option></select><select class=\"f gSel\" id=\"tqSrc\"><option value=\"num\">Chiffres</option><option value=\"fond\" selected>Ton fond NeoBase</option><option value=\"perso\">Ton image</option></select><button class=\"btn px\" id=\"tqPick\">CHOISIR UNE IMAGE</button><button class=\"btn px\" id=\"tqNew\">MÉLANGER</button></div></div>\n      <div class=\"tqMain\"><div id=\"tqBoard\" class=\"px\"></div><div id=\"tqPreview\" class=\"px\"></div></div>\n      <div class=\"row\"><label class=\"check\"><input type=\"checkbox\" id=\"tqNums\" checked> Numéros sur l'image</label><button class=\"btn px\" id=\"tqPeek\">Maintenir : voir le modèle</button></div>\n      <input type=\"file\" id=\"tqFile\" accept=\"image/*\" hidden>\n      <div class=\"hint\">Clique une pièce sur la ligne ou la colonne du trou pour la faire glisser, ou utilise les flèches. Ton image est gardée dans la sauvegarde.</div>\n    </div>";
+/*CSS-MOVED*/ const CSS = `.gSel{width:auto;font-size:14px;padding:6px 10px;margin-right:8px}
+.tqMain{display:flex;gap:24px;align-items:flex-start}
+#tqBoard{--fill:var(--field);position:relative;flex:none}
+.tqTile .tqNum{display:none;font:12px var(--title);color:#fff;background:rgba(5,1,11,.6);padding:4px 6px;position:absolute;left:6px;top:6px}
+.tqTile.numbers .tqNum{display:block}
+.tqTile.hole{transition:opacity .4s}
+.shGrid td.num{text-align:right}
+`;  // le style de ce plugin (il utilise les variables du thème de NeoBase)
 export default async function (ctx) {
   const view = ctx.view;
   if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoBase pour s'ouvrir."; return; }
   const host = ctx.host, { el, toast, sfx, ask, newTab, pixIcon, PIX, WX } = host;
   const folder = ctx.folder, legacy = ctx.legacy || {};
+  ctx.host.addStyle(CSS);
   view.innerHTML = HTML;
   const $ = id => id === "taquinApp" ? view : (view.querySelector('#' + id) || document.getElementById(id));  // les identifiants de ta vue d'abord, puis ceux de la page (fenêtres, menus)
   const doc = async n => { try { return await folder.read(n); } catch { return null; } };
