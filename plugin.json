@@ -1,9 +1,9 @@
 {
-  "id": "neobase.taquin",
+  "id": "neodex.taquin",
   "name": "Taquin",
   "version": "1.1.0",
   "author": "NDesumeur",
-  "description": "Remets les tuiles dans l'ordre : chiffres, ciel NeoBase ou ta propre image.",
+  "description": "Remets les tuiles dans l'ordre : chiffres, ciel NeoDex ou ta propre image.",
   "icon": "icon.png",
   "entry": "index.js",
   "view": "taquin",

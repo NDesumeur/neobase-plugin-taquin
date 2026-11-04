@@ -1,7 +1,7 @@
 // Taquin : ton appli d'origine (HTML et code inchangés), livrée en plugin.
-// Ses données sont dans le dossier du plugin, que NeoBase sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoBase.
-// Elle tourne dans le bac à sable de NeoBase, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
-const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Taquin</span><span class=\"hint\" id=\"tqInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"tqSize\"><option value=\"3\">3 × 3</option><option value=\"4\" selected>4 × 4</option><option value=\"5\">5 × 5</option><option value=\"6\">6 × 6</option><option value=\"7\">7 × 7</option><option value=\"8\">8 × 8</option></select><select class=\"f gSel\" id=\"tqSrc\"><option value=\"num\">Chiffres</option><option value=\"fond\" selected>Ton fond NeoBase</option><option value=\"perso\">Ton image</option></select><button class=\"btn px\" id=\"tqPick\">CHOISIR UNE IMAGE</button><button class=\"btn px\" id=\"tqNew\">MÉLANGER</button></div></div>\n      <div class=\"tqMain\"><div id=\"tqBoard\" class=\"px\"></div><div id=\"tqPreview\" class=\"px\"></div></div>\n      <div class=\"row\"><label class=\"check\"><input type=\"checkbox\" id=\"tqNums\" checked> Numéros sur l'image</label><button class=\"btn px\" id=\"tqPeek\">Maintenir : voir le modèle</button></div>\n      <input type=\"file\" id=\"tqFile\" accept=\"image/*\" hidden>\n      <div class=\"hint\">Clique une pièce sur la ligne ou la colonne du trou pour la faire glisser, ou utilise les flèches. Ton image est gardée dans la sauvegarde.</div>\n    </div>";
+// Ses données sont dans le dossier du plugin, que NeoDex sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoDex.
+// Elle tourne dans le bac à sable de NeoDex, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
+const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Taquin</span><span class=\"hint\" id=\"tqInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"tqSize\"><option value=\"3\">3 × 3</option><option value=\"4\" selected>4 × 4</option><option value=\"5\">5 × 5</option><option value=\"6\">6 × 6</option><option value=\"7\">7 × 7</option><option value=\"8\">8 × 8</option></select><select class=\"f gSel\" id=\"tqSrc\"><option value=\"num\">Chiffres</option><option value=\"fond\" selected>Ton fond NeoDex</option><option value=\"perso\">Ton image</option></select><button class=\"btn px\" id=\"tqPick\">CHOISIR UNE IMAGE</button><button class=\"btn px\" id=\"tqNew\">MÉLANGER</button></div></div>\n      <div class=\"tqMain\"><div id=\"tqBoard\" class=\"px\"></div><div id=\"tqPreview\" class=\"px\"></div></div>\n      <div class=\"row\"><label class=\"check\"><input type=\"checkbox\" id=\"tqNums\" checked> Numéros sur l'image</label><button class=\"btn px\" id=\"tqPeek\">Maintenir : voir le modèle</button></div>\n      <input type=\"file\" id=\"tqFile\" accept=\"image/*\" hidden>\n      <div class=\"hint\">Clique une pièce sur la ligne ou la colonne du trou pour la faire glisser, ou utilise les flèches. Ton image est gardée dans la sauvegarde.</div>\n    </div>";
 /*CSS-MOVED*/ const CSS = `.gSel{width:auto;font-size:14px;padding:6px 10px;margin-right:8px}
 .tqMain{display:flex;gap:24px;align-items:flex-start}
 #tqBoard{--fill:var(--field);position:relative;flex:none}
@@ -9,10 +9,10 @@ const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\
 .tqTile.numbers .tqNum{display:block}
 .tqTile.hole{transition:opacity .4s}
 .shGrid td.num{text-align:right}
-`;  // le style de ce plugin (il utilise les variables du thème de NeoBase)
+`;  // le style de ce plugin (il utilise les variables du thème de NeoDex)
 export default async function (ctx) {
   const view = ctx.view;
-  if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoBase pour s'ouvrir."; return; }
+  if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoDex pour s'ouvrir."; return; }
   const host = ctx.host, { el, toast, sfx, ask, newTab, pixIcon, PIX, WX } = host;
   const folder = ctx.folder, legacy = ctx.legacy || {};
   ctx.host.addStyle(CSS);
@@ -56,13 +56,13 @@ const anyOf = a => a[Math.floor(Math.random() * a.length)];
 const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const clock = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
 
-/* ---------- Taquin: slide the tiles back in order; numbers, the current NeoBase sky, or your own image (kept in the save) ---------- */
+/* ---------- Taquin: slide the tiles back in order; numbers, the current NeoDex sky, or your own image (kept in the save) ---------- */
 let tq = null, tqSky = null;
 const tqSkyNow = () => ctx.host.sky ? ctx.host.sky().then(u => { tqSky = u; }).catch(() => {}) : Promise.resolve();
 function tqImage() {
   const src = $('tqSrc').value;
   if (src === 'perso') return games.taquinImg || null;
-  if (src === 'fond') return tqSky;  // a square cut from the two sky layers, as on screen (given by NeoBase, refreshed at each opening)
+  if (src === 'fond') return tqSky;  // a square cut from the two sky layers, as on screen (given by NeoDex, refreshed at each opening)
   return null;
 }
 function tqNew() {
@@ -74,7 +74,7 @@ function tqNew() {
   }
   if (tiles.every((t, i) => t === i)) return tqNew();
   tq = {n, tiles, moves: 0, t0: 0, secs: 0, done: false, img: tqImage()};
-  $('taquinApp').classList.toggle('perso', $('tqSrc').value === 'perso');  // your own picture keeps its colours; NeoBase's decor follows the theme
+  $('taquinApp').classList.toggle('perso', $('tqSrc').value === 'perso');  // your own picture keeps its colours; NeoDex's decor follows the theme
   $('tqBoard').replaceChildren();
   if ($('tqSrc').value === 'perso' && !tq.img) toast('Choisis d\'abord une image');
   tqRender();
